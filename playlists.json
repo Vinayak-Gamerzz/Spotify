@@ -5,13 +5,5 @@
         "description": "Daily Songs",
         "cover": "https://raw.githubusercontent.com/Vinayak-Gamerzz/Spotify/main/songs/ncs/cover.jpg",
         "songs": "https://raw.githubusercontent.com/Vinayak-Gamerzz/Spotify/main/songs/ncs/songs.json"
-    },
-
-    {
-        "folder": "test",
-        "title": "Test",
-        "description": "Test",
-        "cover": "https://raw.githubusercontent.com/Vinayak-Gamerzz/Spotify/main/songs/test/cover.jpg",
-        "songs": "https://raw.githubusercontent.com/Vinayak-Gamerzz/Spotify/main/songs/test/songs.json"
     }
 ]
