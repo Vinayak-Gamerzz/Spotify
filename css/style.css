@@ -317,6 +317,20 @@ body {
 
 }
 
+.downloadSong {
+    background: transparent;
+    border: none;
+    color: white;
+    font-size: 20px;
+    cursor: pointer;
+    margin-left: 10px;
+}
+
+.downloadSong:disabled {
+    cursor: default;
+    opacity: 0.7;
+}
+
 .playnow {
 
     display: flex;
