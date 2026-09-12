@@ -64,3 +64,5 @@ async function getPlaylists() {
 
     return [];
 }
+
+export { getPlaylists };

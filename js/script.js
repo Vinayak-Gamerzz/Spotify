@@ -1,3 +1,4 @@
+import { getPlaylists } from "./cache.js";
 let Capacitor = null;
 let Filesystem = null;
 let Directory = null;
