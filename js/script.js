@@ -253,15 +253,7 @@ const playMusic = async (song, pause = false) => {
 
 async function displayAlbums() {
     try {
-        let response = await fetch(
-            "https://raw.githubusercontent.com/Vinayak-Gamerzz/Spotify/main/playlists.json"
-        );
-
-        if (!response.ok) {
-            throw new Error("playlists.json load nahi hua");
-        }
-
-        playlists = await response.json();
+        playlists = await getPlaylists();
 
         let cardContainer =
             document.querySelector(".cardContainer");
