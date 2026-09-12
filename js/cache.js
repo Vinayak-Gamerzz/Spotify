@@ -1,17 +1,22 @@
-const CACHE_NAME = "spotify-playlists-v1";
+const CACHE_NAME = "spotify-playlists-v2";
 
 const PLAYLIST_URL =
     "https://raw.githubusercontent.com/Vinayak-Gamerzz/Spotify/main/playlists.json";
 
-
 async function getPlaylists() {
 
+    const cache = await caches.open(CACHE_NAME);
 
+    // ONLINE
     if (navigator.onLine) {
 
         try {
 
-            const response = await fetch(PLAYLIST_URL);
+            const response = await fetch(PLAYLIST_URL, {
+                
+                cache: "no-store"
+
+            });
 
             if (!response.ok) {
 
@@ -21,8 +26,7 @@ async function getPlaylists() {
 
             const playlists = await response.json();
 
-            const cache = await caches.open(CACHE_NAME);
-
+            // Save playlist JSON locally
             await cache.put(
 
                 "playlists-data",
@@ -41,28 +45,36 @@ async function getPlaylists() {
 
             return playlists;
 
-
         } catch (error) {
 
-            console.log("Online fetch failed, checking local cache...");
+            console.log(
+
+                "Online fetch failed, using cached playlists..."
+
+            );
 
         }
-
     }
 
-    const cache = await caches.open(CACHE_NAME);
+    try {
 
+        const cachedResponse = await cache.match("playlists-data");
 
-    const cachedResponse = await cache.match("playlists-data");
+        if (cachedResponse) {
 
+            const playlists = await cachedResponse.json();
 
-    if (cachedResponse) {
+            console.log("Loaded playlists from local cache");
 
-        return await cachedResponse.json();
+            return playlists;
+        }
+
+    } catch (error) {
+
+        console.log("Cache read failed:", error);
 
     }
 
     return [];
-}
 
-export { getPlaylists };
+}
