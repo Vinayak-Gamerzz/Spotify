@@ -141,34 +141,155 @@ async function getLocalSongUri(song) {
 }
 
 async function getSongs(playlist) {
+
     try {
+
         currPlaylist = playlist;
 
-        let response = await fetch(playlist.songs);
+        const SONG_CACHE_NAME = "spotify-songs-v1";
 
-        if (!response.ok) {
-            throw new Error("songs.json load nahi hua");
+        const cache = await caches.open(SONG_CACHE_NAME);
+
+        let response;
+
+        
+        if (navigator.onLine) {
+
+            try {
+
+                response = await fetch(playlist.songs);
+
+                if (!response.ok) {
+                    throw new Error("songs.json load nahi hua");
+                }
+
+
+                await cache.put(
+                    playlist.songs,
+                    response.clone()
+                );
+
+                console.log("Songs cached:", playlist.songs);
+
+            } catch (error) {
+
+                console.log(
+                    "Online songs fetch failed, checking cache..."
+                );
+
+                response = await cache.match(playlist.songs);
+
+            }
+
+        } 
+        
+
+        else {
+
+            console.log("Offline: loading songs from cache...");
+
+            response = await cache.match(playlist.songs);
+
         }
 
+
+        if (!response) {
+
+            throw new Error(
+                "Songs offline available nahi hain. Pehle online playlist open karo."
+            );
+
+        }
+
+
         songs = await response.json();
+
+        if (navigator.onLine) {
+
+            const audioCache = await caches.open("spotify-songs-v1");
+
+            songs.forEach(async (song) => {
+
+                if (!song.url) return;
+
+                try {
+
+                    const existing = await audioCache.match(song.url);
+
+                    if (!existing) {
+
+                        const audioResponse = await fetch(song.url);
+
+                        if (audioResponse.ok) {
+
+                            await audioCache.put(
+
+                                song.url,
+
+                                audioResponse.clone()
+
+                            );
+
+                            console.log(
+
+                                "Audio cached:",
+
+                                song.name
+
+                            );
+
+                        }
+
+                    }
+
+                } catch (error) {
+
+                    console.log(
+                        
+                        "Audio cache failed:",
+
+                        song.name
+
+                    );
+
+                }
+
+            });
+
+        }
+
+        console.log("Songs loaded:", songs);
+
 
         let songUL = document.querySelector(".songList ul");
 
         songUL.innerHTML = "";
 
+
         for (let index = 0; index < songs.length; index++) {
+
             const song = songs[index];
 
             songUL.innerHTML += `
                 <li>
-                    <img class="invert" width="34" src="img/music.svg" alt="">
+
+                    <img
+                        class="invert"
+                        width="34"
+                        src="img/music.svg"
+                        alt=""
+                    >
 
                     <div class="info">
+
                         <div>${song.name}</div>
+
                         <div>Vinayak</div>
+
                     </div>
 
                     <div class="playnow">
+
                         <span>Play Now</span>
 
                         <img
@@ -184,47 +305,89 @@ async function getSongs(playlist) {
                         >
                             ⬇
                         </button>
+
                     </div>
+
                 </li>
             `;
+
         }
 
-        Array.from(songUL.getElementsByTagName("li")).forEach((e, index) => {
+
+        Array.from(
+            songUL.getElementsByTagName("li")
+        ).forEach((e, index) => {
+
             e.addEventListener("click", (event) => {
-                if (event.target.classList.contains("downloadSong")) {
+
+                if (
+                    event.target.classList.contains("downloadSong")
+                ) {
                     return;
                 }
 
                 playMusic(songs[index]);
+
             });
+
         });
+
 
         Array.from(
             songUL.querySelectorAll(".downloadSong")
         ).forEach(button => {
-            const index = Number(button.dataset.songIndex);
+
+            const index = Number(
+                button.dataset.songIndex
+            );
+
             const song = songs[index];
 
+
             isSongDownloaded(song).then(downloaded => {
+
                 if (downloaded) {
+
                     button.innerText = "✓";
+
                 }
+
             });
 
-            button.addEventListener("click", async (event) => {
-                event.stopPropagation();
-                await downloadSong(song, button);
-            });
+
+            button.addEventListener(
+                "click",
+                async (event) => {
+
+                    event.stopPropagation();
+
+                    await downloadSong(
+                        song,
+                        button
+                    );
+
+                }
+            );
+
         });
 
+
         return songs;
+
+
     } catch (error) {
-        console.log("Songs load nahi hue:", error);
+
+        console.log(
+            "Songs load nahi hue:",
+            error
+        );
 
         songs = [];
 
         return songs;
+
     }
+
 }
 
 const playMusic = async (song, pause = false) => {
@@ -232,24 +395,82 @@ const playMusic = async (song, pause = false) => {
     const localUri = await getLocalSongUri(song);
 
     if (localUri) {
+
         currentSong.src = localUri;
+
         console.log("Playing downloaded:", song.name);
+
+    } else if (!navigator.onLine) {
+
+        const cache = await caches.open("spotify-songs-v1");
+
+        const cachedSong = await cache.match(song.url);
+
+        if (cachedSong) {
+
+            const blob = await cachedSong.blob();
+
+            const localUrl = URL.createObjectURL(blob);
+
+            currentSong.src = localUrl;
+
+            console.log("Playing cached:", song.name);
+
+        } else {
+
+            console.log(
+
+                "Song offline available nahi hai:",
+
+                song.name
+
+            );
+
+            alert(
+
+                `"${song.name}" offline available nahi hai.`
+
+            );
+
+            return;
+        }
+
     } else {
+
         currentSong.src = song.url;
+
         console.log("Playing online:", song.name);
+
     }
+
 
     document.querySelector(".songinfo").innerHTML = song.name;
 
     document.querySelector(".songtime").innerHTML =
+
         "00:00 / 00:00";
 
     document.querySelector(".circle").style.left = "0%";
 
+
     if (!pause) {
-        currentSong.play();
-        document.querySelector("#play").src = "img/pause.svg";
+
+        try {
+
+            await currentSong.play();
+
+            document.querySelector("#play").src =
+
+                "img/pause.svg";
+
+        } catch (error) {
+
+            console.log("Playback failed:", error);
+
+        }
+
     }
+
 };
 
 async function displayAlbums() {

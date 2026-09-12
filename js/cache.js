@@ -1,22 +1,19 @@
 const CACHE_NAME = "spotify-playlists-v2";
+const SONG_CACHE_NAME = "spotify-songs-v1";
 
 const PLAYLIST_URL =
     "https://raw.githubusercontent.com/Vinayak-Gamerzz/Spotify/main/playlists.json";
 
-async function getPlaylists() {
+
+export async function getPlaylists() {
 
     const cache = await caches.open(CACHE_NAME);
 
-    // ONLINE
     if (navigator.onLine) {
 
         try {
 
-            const response = await fetch(PLAYLIST_URL, {
-                
-                cache: "no-store"
-
-            });
+            const response = await fetch(PLAYLIST_URL);
 
             if (!response.ok) {
 
@@ -26,7 +23,6 @@ async function getPlaylists() {
 
             const playlists = await response.json();
 
-            // Save playlist JSON locally
             await cache.put(
 
                 "playlists-data",
@@ -43,38 +39,132 @@ async function getPlaylists() {
 
             );
 
+            console.log("Playlists saved to local cache");
+
             return playlists;
 
         } catch (error) {
 
-            console.log(
-
-                "Online fetch failed, using cached playlists..."
-
-            );
+            console.log("Online playlist fetch failed");
 
         }
     }
 
-    try {
+    const cachedResponse = await cache.match("playlists-data");
 
-        const cachedResponse = await cache.match("playlists-data");
+    if (cachedResponse) {
 
-        if (cachedResponse) {
+        console.log("Loaded playlists from local cache");
 
-            const playlists = await cachedResponse.json();
-
-            console.log("Loaded playlists from local cache");
-
-            return playlists;
-        }
-
-    } catch (error) {
-
-        console.log("Cache read failed:", error);
+        return await cachedResponse.json();
 
     }
 
     return [];
+}
+
+
+async function cacheSongs(playlist) {
+
+    if (!navigator.onLine) {
+
+        return;
+
+    }
+
+    try {
+
+        const response = await fetch(playlist.songs);
+
+        if (!response.ok) {
+
+            throw new Error("songs.json load nahi hua");
+
+        }
+
+        const songs = await response.json();
+
+        const cache = await caches.open(SONG_CACHE_NAME);
+
+        for (const song of songs) {
+
+            if (!song.url) continue;
+
+            try {
+
+                const alreadyCached = await cache.match(song.url);
+
+                if (!alreadyCached) {
+
+                    console.log("Caching:", song.name);
+
+                    const songResponse = await fetch(song.url);
+
+                    if (songResponse.ok) {
+
+                        await cache.put(
+
+                            song.url,
+
+                            songResponse
+
+                        );
+
+                    }
+
+                }
+
+            } catch (error) {
+
+                console.log(
+
+                    "Song cache nahi hua:",
+
+                    song.name,
+
+                    error
+
+                );
+
+            }
+
+        }
+
+        console.log(
+
+            "Playlist songs cached:",
+
+            playlist.name
+
+        );
+
+    } catch (error) {
+
+        console.log(
+
+            "Songs cache failed:",
+
+            error
+
+        );
+
+    }
+
+}
+
+
+async function getCachedSong(url) {
+
+    const cache = await caches.open(SONG_CACHE_NAME);
+
+    const response = await cache.match(url);
+
+    if (response) {
+
+        return await response.blob();
+
+    }
+
+    return null;
 
 }
