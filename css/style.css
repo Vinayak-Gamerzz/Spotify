@@ -255,8 +255,9 @@ body {
 .songbuttons {
 
     display: flex;
+    align-items: center;
     justify-content: center;
-    gap: 16px;
+    gap: 20px;
 
 }
 
@@ -412,7 +413,7 @@ body {
 .timevol {
 
     display: flex;
-    justify-content: space-evenly;
+    justify-content: center;
     align-items: center;
 
 }
@@ -422,15 +423,17 @@ body {
 
     color: black;
     padding: 0 12px;
-    width: 250px;
+    width: auto;
+    text-align: center;
+    font-size: 18px;
 
 }
 
 .songtime {
 
-    width: 125px;
+    width: auto;
     color: black;
-    padding: 0 12px;
+    padding: 0;
 
 }
 
@@ -438,9 +441,9 @@ body {
 .volume {
 
     display: flex;
-    justify-content: center;
     align-items: center;
-    gap: 12px;
+    justify-content: center;
+    gap: 8px;
     cursor: pointer;
 
 }
@@ -448,15 +451,19 @@ body {
 .range input{
 
     cursor: pointer;
+    width: 110px;
 
 }
 
 .abovebar {
 
     display: flex;
-    justify-content: space-between;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
     margin: 20px 0;
     width: 100%;
+    gap: 25px;
 
 }
 
@@ -515,6 +522,30 @@ body {
 .searchBox input::placeholder {
 
     color: #b3b3b3;
+
+}
+
+#favouriteBtn {
+
+    background: transparent;
+    border: none;
+    color: #1fdf64;
+    font-size: 28px;
+    cursor: pointer;
+    padding: 0;
+    margin: 0;
+
+}
+
+#favouriteBtn:hover {
+
+    transform: scale(1.1);
+
+}
+
+#favouriteBtn.active {
+
+    color: #1fdf64;
 
 }
 
