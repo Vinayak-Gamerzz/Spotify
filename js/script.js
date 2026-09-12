@@ -498,3 +498,28 @@ async function main() {
 }
 
 main();
+
+const searchInput = document.getElementById('searchInput');
+
+searchInput.addEventListener("input", function () {
+
+    const searchText = searchInput.value.toLowerCase().trim();
+
+    const songs = document.querySelectorAll(".cardContainer .card");
+
+    songs.forEach(song => {
+        const text = song.innerText.toLowerCase();
+
+        if (text.includes(searchText)) {
+
+            song.style.display = "";
+
+        } else {
+
+            song.style.display = "none";
+
+        }
+
+    });
+
+});
