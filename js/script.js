@@ -1,6 +1,32 @@
-import { Capacitor } from "@capacitor/core";
-import { Filesystem, Directory } from "@capacitor/filesystem";
-import { FileTransfer } from "@capacitor/file-transfer";
+let Capacitor = null;
+let Filesystem = null;
+let Directory = null;
+let FileTransfer = null;
+let isNative = false;
+
+async function initCapacitor() {
+    if (typeof window.Capacitor === "undefined") {
+        console.log("Running in browser");
+        return;
+    }
+
+    try {
+        Capacitor = window.Capacitor;
+        isNative = Capacitor.isNativePlatform();
+
+        if (isNative) {
+            const filesystem = await import("@capacitor/filesystem");
+            const fileTransfer = await import("@capacitor/file-transfer");
+
+            Filesystem = filesystem.Filesystem;
+            Directory = filesystem.Directory;
+            FileTransfer = fileTransfer.FileTransfer;
+        }
+    } catch (error) {
+        console.error("Capacitor initialization failed:", error);
+        isNative = false;
+    }
+}
 
 console.log("Lets listen to music");
 
@@ -28,6 +54,11 @@ function getSafeFileName(name) {
 }
 
 async function isSongDownloaded(song) {
+
+    if (!isNative) {
+        return false;
+    }
+
     try {
         const fileName = getSafeFileName(song.name);
 
@@ -83,6 +114,11 @@ async function downloadSong(song, button) {
 }
 
 async function getLocalSongUri(song) {
+
+    if (!isNative) {
+        return null;
+    }
+
     try {
         const fileName = getSafeFileName(song.name);
 
@@ -353,6 +389,9 @@ async function displayAlbums() {
 }
 
 async function main() {
+
+    await initCapacitor();
+
     await displayAlbums();
 
     document
@@ -497,29 +536,37 @@ async function main() {
         });
 }
 
-main();
+const searchInput = document.getElementById("searchInput");
 
-const searchInput = document.getElementById('searchInput');
+if (searchInput) {
 
-searchInput.addEventListener("input", function () {
+    searchInput.addEventListener("input", function () {
 
-    const searchText = searchInput.value.toLowerCase().trim();
+        const searchText = searchInput.value.toLowerCase().trim();
 
-    const songs = document.querySelectorAll(".cardContainer .card");
+        const cards = document.querySelectorAll(".cardContainer .card");
 
-    songs.forEach(song => {
-        const text = song.innerText.toLowerCase();
+        cards.forEach(card => {
 
-        if (text.includes(searchText)) {
+            const title =
+                card.querySelector("h2")?.innerText.toLowerCase() || "";
 
-            song.style.display = "";
+            const description =
+                card.querySelector("p")?.innerText.toLowerCase() || "";
 
-        } else {
+            if (
+                title.includes(searchText) ||
+                description.includes(searchText)
+            ) {
+                card.style.display = "";
+            } else {
+                card.style.display = "none";
+            }
 
-            song.style.display = "none";
-
-        }
+        });
 
     });
 
-});
+}
+
+main();
