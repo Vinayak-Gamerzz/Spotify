@@ -569,50 +569,9 @@ if (searchInput) {
 
 }
 
-let favouriteSongs = JSON.parse(localStorage.getItem("favouriteSongs")) || [];
+let favouriteSongs =
+    JSON.parse(localStorage.getItem("favouriteSongs")) || [];
 
-const favouriteBtn = document.getElementById("favouriteBtn");
-
-function updateFavouriteButton(songName) {
-    if (!favouriteBtn || !songName) return;
-
-    if (favouriteSongs.includes(songName)) {
-        favouriteBtn.innerHTML = "♥";
-        favouriteBtn.classList.add("active");
-
-    } else {
-        favouriteBtn.innerText = "♡";
-        favouriteBtn.classList.remove("active");
-
-    }
-
-}
-
-function toggleFavourite(songName) {
-    if (!songName) return;
-
-    if (favouriteSongs.includes(songName)) {
-        favouriteSongs = favouriteSongs.filter(song => song !== songName);
-
-    } else {
-        favouriteSongs.push(songName);
-
-    }
-
-    localStorage.setItem("favouriteSongs", JSON.stringify(favouriteSongs));
-    updateFavouriteButton(songName);
-
-}
-
-if (favouriteBtn) {
-    favouriteBtn.addEventListener("click", () => {
-        if (currentSong) {
-            toggleFavourite(currentSong);
-
-        }
-
-    });
-
-}
+let favouriteBtn = document.getElementById
 
 main();
