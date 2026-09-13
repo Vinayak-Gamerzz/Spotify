@@ -1,4 +1,5 @@
 import { getPlaylists } from "./cache.js";
+
 let Capacitor = null;
 let Filesystem = null;
 let Directory = null;
@@ -6,27 +7,57 @@ let FileTransfer = null;
 let isNative = false;
 
 async function initCapacitor() {
-    if (typeof window.Capacitor === "undefined") {
-        console.log("Running in browser");
-        return;
-    }
-
     try {
         Capacitor = window.Capacitor;
+
+        if (!Capacitor) {
+            
+            console.log("Running in browser");
+
+            return;
+
+        }
+
         isNative = Capacitor.isNativePlatform();
 
-        if (isNative) {
-            const filesystem = await import("@capacitor/filesystem");
-            const fileTransfer = await import("@capacitor/file-transfer");
+        if (!isNative) {
 
-            Filesystem = filesystem.Filesystem;
-            Directory = filesystem.Directory;
-            FileTransfer = fileTransfer.FileTransfer;
+            console.log("Running in browser");
+
+            return;
+
         }
+
+        Filesystem = Capacitor.Plugins.Filesystem;
+
+        FileTransfer = Capacitor.Plugins.FileTransfer;
+
+        Directory = {
+
+            Data: "DATA",
+
+            Documents: "DOCUMENTS",
+
+            Cache: "CACHE"
+
+        };
+
+        if (!Filesystem || !FileTransfer) {
+
+            throw new Error("Capacitor plugins not available");
+
+        }
+
+        console.log("Capacitor initialized successfully");
+
     } catch (error) {
+
         console.error("Capacitor initialization failed:", error);
+
         isNative = false;
+
     }
+
 }
 
 console.log("Lets listen to music");
