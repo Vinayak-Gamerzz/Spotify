@@ -1,5 +1,6 @@
 {
-  "appId": "com.vinayak.spotifyclone",
-  "appName": " Spotify Clone",
+  "appId": "com.vinayak.spotify",
+  "appName": " Spotify",
   "webDir": "www"
 }
+

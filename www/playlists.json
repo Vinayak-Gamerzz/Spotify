@@ -1,0 +1,9 @@
+[
+    {
+        "folder": "ncs",
+        "title": "Hindi",
+        "description": "Daily Songs",
+        "cover": "https://raw.githubusercontent.com/Vinayak-Gamerzz/Spotify/main/songs/ncs/cover.jpg",
+        "songs": "https://raw.githubusercontent.com/Vinayak-Gamerzz/Spotify/main/songs/ncs/songs.json"
+    }
+]
