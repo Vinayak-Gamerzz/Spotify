@@ -5,6 +5,8 @@ and when i checked my 1 year subscription ended, ohh maa gawd, and i don't have 
 
 and, then i remembered that i can code now so why don't i make an own spotify so here it is!
 
+Latest Update | 13/09/26 - Now offline playing is available in browsers too just run it for a while in browser than until you refresh the website (without internet connectivity) you can listen to any song online on your browser no downloading nothin!, and also fixed android offline playing bug
+
 <img src="img1.png" alt="Main Page Spotify">
 
 It's the main home page of our spotify and it has 1 playlist rn cause i haven't added more and when i'll need smth more ill just add it to hc cdn and paste the link in playlist.json, and songs in songs.json simple.
@@ -86,3 +88,11 @@ i have offline playing in app phone app but not in website cause yk it can't be 
 <img src="img21.jpeg">
 
 # MY FIRST APP!
+
+I have used a tutorial of code by harry to create the website of spotify
+
+then i created - it's app, most cool thing, offline playability on browser and android app both, i have made easy ways to add playlist and songs, and also search bar, and whatever you can see like everything is made by me just with the help of tutorial to create the website
+
+# Upcoming Features
+
+Admin Panel just go to the website and add songs no need to add them in the code or smth, and then downloadable music without increasing app's size and windows app!
