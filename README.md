@@ -1,3 +1,10 @@
+# Reviewers 
+
+this note is till it gets reviewed
+kindly refer to this before reviewing!
+
+https://user-cdn.hackclub-assets.com/01a0a15f-3278-7aad-8664-6851346c5bcf/Spotify%20testing.mp4
+
 # Spotify
 
 Hey, so i was listening to songs when i was in the gym on spotify and unexpectedly an ad came, and my whole set got ruined!!!!!!!
