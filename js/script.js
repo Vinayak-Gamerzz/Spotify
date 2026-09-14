@@ -35,6 +35,7 @@ let currentSong = new Audio();
 let songs = [];
 let currPlaylist = null;
 let playlists = [];
+let currentSongIndex = -1;
 
 function secondsToMinutesSeconds(seconds) {
     if (isNaN(seconds) || seconds < 0) {
@@ -392,80 +393,49 @@ async function getSongs(playlist) {
 
 const playMusic = async (song, pause = false) => {
 
+    currentSongIndex = songs.indexOf(song);
+
     const localUri = await getLocalSongUri(song);
 
-    if (localUri) {
+    currentSong.pause();
+    currentSong.src = "";
 
+    if (localUri) {
+        
         currentSong.src = localUri;
 
         console.log("Playing downloaded:", song.name);
 
-    } else if (!navigator.onLine) {
-
-        const cache = await caches.open("spotify-songs-v1");
-
-        const cachedSong = await cache.match(song.url);
-
-        if (cachedSong) {
-
-            const blob = await cachedSong.blob();
-
-            const localUrl = URL.createObjectURL(blob);
-
-            currentSong.src = localUrl;
-
-            console.log("Playing cached:", song.name);
-
-        } else {
-
-            console.log(
-
-                "Song offline available nahi hai:",
-
-                song.name
-
-            );
-
-            alert(
-
-                `"${song.name}" offline available nahi hai.`
-
-            );
-
-            return;
-        }
-
     } else {
-
         currentSong.src = song.url;
 
         console.log("Playing online:", song.name);
 
     }
 
-
+    
     document.querySelector(".songinfo").innerHTML = song.name;
 
-    document.querySelector(".songtime").innerHTML =
-
-        "00:00 / 00:00";
+    document.querySelector(".songtime").innerHTML = "00:00 / 00:00";
 
     document.querySelector(".circle").style.left = "0%";
-
 
     if (!pause) {
 
         try {
 
+
             await currentSong.play();
 
-            document.querySelector("#play").src =
-
-                "img/pause.svg";
+            document.querySelector("#play").src = "img/pause.svg";
 
         } catch (error) {
 
-            console.log("Playback failed:", error);
+            if (error.name !== "AbortError") {
+
+                console.error("Playback failed:", error);
+
+            }
 
         }
 
@@ -659,35 +629,64 @@ async function main() {
         });
 
     document
-        .querySelector("#previous")
-        .addEventListener("click", () => {
-            let index =
-                songs.indexOf(
-                    songs.find(
-                        song =>
-                            song.url === currentSong.src
-                    )
-                );
 
-            if (index > 0) {
-                playMusic(songs[index - 1]);
+        .querySelector("#previous")
+
+        .addEventListener("click", async () => {
+
+            if (currentSongIndex <= 0) return;
+
+            if (!isNative) {
+
+                playMusic(songs[currentSongIndex - 1]);
+
+                return
             }
+
+            for (let i = currentSongIndex - 1; i >= 0; i--) {
+
+                if (await isSongDownloaded(songs[i])) {
+
+                    playMusic(songs[i]);
+
+                    return;
+
+                }
+
+            }
+
         });
 
     document
-        .querySelector("#next")
-        .addEventListener("click", () => {
-            let index =
-                songs.indexOf(
-                    songs.find(
-                        song =>
-                            song.url === currentSong.src
-                    )
-                );
 
-            if (index + 1 < songs.length) {
-                playMusic(songs[index + 1]);
+        .querySelector("#next")
+
+        .addEventListener("click", async () => {
+
+            if (!isNative) {
+
+                if (currentSongIndex + 1 < songs.length) {
+
+                    playMusic(songs[currentSongIndex + 1]);
+
+                }
+
+                return;
+
             }
+
+            for (let i = currentSongIndex + 1; i < songs.length; i++) {
+
+                if (await isSongDownloaded(songs[i])) {
+
+                    playMusic(songs[i]);
+
+                    return;
+
+                }
+
+            }
+
         });
 
     currentSong.addEventListener("ended", () => {
