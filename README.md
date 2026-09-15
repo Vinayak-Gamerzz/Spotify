@@ -14,6 +14,29 @@ and, then i remembered that i can code now so why don't i make an own spotify so
 
 Latest Update | 13/09/26 - Now offline playing is available in browsers too just run it for a while in browser than until you refresh the website (without internet connectivity) you can listen to any song online on your browser no downloading nothin!, and also fixed android offline playing bug
 
+# What I have done own and what i have done from tutorial -
+
+So i used Code with harry's tutorial to only make the website's UI/UX after that i havent seen that video it's just stopped where UI ended! cause I suck at designing, like colors and shape size tbh i use pintreset to get the color pallete for my projects Y-Y -Y-Y
+
+so what i have done specific in detail!
+
+I created it's android app too
+added downloadable thing where you can download songs in android app, and listen to them offline whereever you are as we listen in spotify
+added search playlist feature
+created js with the help of chat gpt for debugging and find typos cause they creates a messss
+i created an easier way to add songs than harry he was saying like add everything locally like songs and all iirc i haven't seen it further
+but i used hack club's cdn (wdym cause i don't wanna buy db hehehe) so, i connected it with songs.json so the songs.json file fetch mp3 files from my cdn and play it here, if i had to add new songs i will just add it in cdn and copy paste the link in songs.json with it's name and its done.
+I have done same with playlist's it's covers are connected from my github and it has the same playlist.json it fetches thing from there.
+Now you'll be thinking that how will it work in offline mode when everything is fetching from website so once you open app or website after a few seconds it start fetching songs, albums, playlist, cover, name everything in local cache in website! so you can play offline on website too
+and on android you just download the songs, and playlist, album, cover heading and all saves in local cache.
+
+# What i've learnt from this
+
+Catche thing that i can actually store things temporarily in any device 
+and when we do inspect element i can litreally style it from there and then do the code accordingly dayumn1!
+and how to autoplay, and after autoplaying, it shouldn't go back to 1st or a specific songs i have leart this function too by error and trail :), and how to create apk's and android app (tbh i wasn't able to locate apk then i used yt for that hehe), and yeh that's it~
+
+
 <img src="img1.png" alt="Main Page Spotify">
 
 It's the main home page of our spotify and it has 1 playlist rn cause i haven't added more and when i'll need smth more ill just add it to hc cdn and paste the link in playlist.json, and songs in songs.json simple.
